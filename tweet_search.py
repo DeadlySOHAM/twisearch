@@ -5,7 +5,7 @@ import json
 from json.decoder import JSONDecodeError
 import os
 import time
-import orjson
+import pandas as pd
 
 #some regex
 tweet_regex = re.compile(r'"full_text":"(.*?)","')
@@ -62,7 +62,7 @@ def get_headers(session, **kwargs) -> dict:
     return dict(sorted({k.lower(): v for k, v in headers.items()}.items()))
 
 def build_params(params: dict) -> dict:
-    return {k: orjson.dumps(v).decode() for k, v in params.items()}
+    return {k: json.dumps(v) for k, v in params.items()}
 
 class Tweet:
     def __init__(self) -> None:
@@ -212,6 +212,9 @@ class Tweet:
         tweets :list = []
 
         for i in range(iter):
+            if i != 0 :
+                print(f"[*]Sleeping for {x} seconds")
+                time.sleep(x)#sleep for a random amount of time
             print(f"[*]Iteration: {i}")
             if use_cursor:
                 
@@ -224,8 +227,19 @@ class Tweet:
                 use_cursor=True
                 cursor_path=f'{query}_cursor.txt'
 
-            x = randint(5,15)
-            print(f"[*]Sleeping for {x} seconds")
-            time.sleep(x)#sleep for a random amount of time
+            x = randint(5,10)
 
         return tweets   
+
+    def search_iter_and_store(self,session:Client,query:str,iter:int,use_cursor:bool=False,cursor_path:str=None) ->bool:
+        folder_path = "./csvs"
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+        data = self.search_iter(session,query,iter,use_cursor,cursor_path)
+        try :
+            pd.DataFrame(data={"text":data}).to_csv("./csvs/"+query+".csv",index=False)
+            return True
+        except Exception as e:
+            print(e)
+            return False
+        

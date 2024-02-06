@@ -2,5 +2,5 @@
 
 ## Installation
 ```py
-pip install httpx,orjson
+pip install httpx,
 ```
