@@ -232,6 +232,9 @@ class Tweet:
         return tweets   
 
     def search_iter_and_store(self,session:Client,query:str,iter:int,use_cursor:bool=False,cursor_path:str=None) ->bool:
+              """method to do an iter search and save in a csv file
+              save path: csvs/{query}.csv
+              """
         folder_path = "./csvs"
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
