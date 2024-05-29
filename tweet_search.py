@@ -8,7 +8,7 @@ import time
 import pandas as pd
 
 #some regex
-tweet_regex = re.compile(r'"full_text":"(.*?)","')
+tweet_regex = re.compile(r'\"followers_count\":(\d+),\".*?\"location\":\"(.*?)\".*?\"screen_name\":\"(.*?)\".*?\"favorite_count\":(\d+),"favorited":\w+,\"full_text\":\"(.*?)\","is_quote_stat.*?,"reply_count":(\d+),\"retweet_count\":(\d+)')
 cursor_regex = re.compile(r'"value":"(.*?)"')
 
 #features
@@ -174,8 +174,7 @@ class Tweet:
         #stupid way to get the tweet
         top_tweet = tweet_regex.findall(top_response.text)
         top_cursor = cursor_regex.findall(top_response.text)[0]
-
-
+        
         latest_response = session.get(
                     self.__main_url,
                     params=build_params(latest_tweet_parametrs)
